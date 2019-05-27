@@ -310,3 +310,135 @@ if let firstNumber = Int("4"), let secondNumber = Int("42"), firstNumber < secon
 print("\(firstNumber) < \(secondNumber) < 100")
 }
 // Prints "4 < 42 < 100”
+
+/*:
+ ## Implicitly Unwrapped Optionals
+ Sometimes it’s clear from a program’s structure that an optional will always have a value, after that value is first set. In these cases, it’s useful to remove the need to check and unwrap the optional’s value every time it’s accessed, because it can be safely assumed to have a value all of the time.
+ These kinds of optionals are defined as implicitly unwrapped optionals.
+ */
+let possibleString: String? = "An optional string."
+let forcedString: String = possibleString! // requires an exclamation mark
+
+let assumedString: String! = "An implicitly unwrapped optional string."
+let implicitString: String = assumedString // no need for an exclamation mark
+
+
+/*:
+ You will get runtime error if you will try to implicitely unwrape an optional which does not have value.
+ You can still treat an implicitly unwrapped optional like a normal optional, to check if it contains a value:
+ */
+ 
+ if assumedString != nil {
+ print(assumedString!)
+ }
+ // Prints "An implicitly unwrapped optional string.
+
+/*:
+ You can also use an implicitly unwrapped optional with optional binding, to check and unwrap its value in a single statement:
+ */
+if let definiteString = assumedString {
+    print(definiteString)
+}
+// Prints "An implicitly unwrapped optional string.
+
+
+/*:
+ ## Error Handling
+ Try, Throw and Throws
+ 
+ We can declare a function which can throw an error like this
+ */
+
+func canThrowAnError() throws {
+    // this function may or may not throw an error
+}
+
+//: Can call Like this
+
+do {
+    try canThrowAnError()
+    // no error was thrown
+} catch {
+    // an error was thrown
+}
+
+
+/*:
+A do statement creates a new containing scope, which allows errors to be propagated to one or more catch clauses.
+ Here’s an example of how error handling can be used to respond to different error conditions:
+*/
+
+func makeASandwich() throws {
+    // ...
+}
+
+func eatASandwich() {}
+func washDishes() {}
+func buyGroceries(_ ingredients:String) {}
+
+enum SandwichError {
+    case outOfCleanDishes
+    case missingIngredients(ingredients:String)
+}
+
+    do {
+        try makeASandwich()
+        eatASandwich()
+    } catch SandwichError.outOfCleanDishes {
+        washDishes()
+    } catch SandwichError.missingIngredients(let ingredients) {
+        buyGroceries(ingredients)
+    } catch {
+        print("An error Catched")
+    }
+
+
+/*:
+ ## Assertions and Preconditions
+ Assertions and preconditions are checks that happen at runtime. You use them to make sure an essential condition is satisfied before executing any further code. If the Boolean condition in the assertion or precondition evaluates to true, code execution continues as usual. If the condition evaluates to false, the current state of the program is invalid; code execution ends, and your app is terminated.
+ 
+ The difference between assertions and preconditions is in when they’re checked: Assertions are checked only in debug builds, but preconditions are checked in both debug and production builds. In production builds, the condition inside an assertion isn’t evaluated. This means you can use as many “assertions as you want during your development process, without impacting performance in production.
+ */
+
+/*:
+ ## Debuging with Assertions
+ You can omit the assertion message—for example, when it would just repeat the condition as prose.
+ */
+
+let age = -3
+//assert(age >= 0, "A person's age can't be less than zero.")  // Intentionally commented to test further code, you can uncomment it
+// This assertion fails because -3 is not >= 0.
+
+/*:
+ You can omit the assertion message—for example, when it would just repeat the condition as prose.
+ */
+//assert(age >= 0)  // Intentionally commented to test further code, you can uncomment it
+
+/*:
+ If the code already checks the condition, you use the assertionFailure(_:file:line:) function to indicate that an assertion has failed. For example:
+ */
+
+if age > 10 {
+    print("You can ride the roller-coaster or the ferris wheel.")
+} else if age >= 0 {
+    print("You can ride the ferris wheel.")
+} else {
+//    assertionFailure("A person's age can't be less than zero.") // Intentionally commented to test further code, you can uncomment it
+}
+
+/*:
+ ## Enforcing Preconditions
+ Use a precondition whenever a condition has the potential to be false, but must definitely be true for your code to continue execution.
+ */
+
+// In the implementation of a subscript...
+let numberPreCond = -1
+//precondition(numberPreCond > 0, "Index must be greater than zero.")  // Intentionally commented to test further code, you can uncomment it
+
+/*: Notes
+    If you compile in unchecked mode (-Ounchecked), preconditions aren’t checked. The compiler assumes that preconditions are always true, and it optimizes your code accordingly. However, the fatalError(_:file:line:) function always halts execution, regardless of optimization settings.
+ 
+    You can use the fatalError(_:file:line:) function during prototyping and early development to create stubs for functionality that hasn’t been implemented yet, by writing fatalError("Unimplemented") as the stub implementation. Because fatal errors are never optimized out, unlike assertions or preconditions, you can be sure that execution always halts if it encounters a stub implementation.
+ */
+//fatalError("Unimplimented")  // Intentionally commented to test further code, you can uncomment it
+//: [Next](@next)
